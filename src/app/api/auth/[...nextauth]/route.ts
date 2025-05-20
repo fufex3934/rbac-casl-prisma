@@ -3,6 +3,12 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/hash";
 
+import type { User as NextAuthUser } from "next-auth";
+
+interface ExtendedUser extends NextAuthUser {
+  role: string;
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -47,7 +53,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       try {
-        if (token?.sub) {
+        if (token) {
           const user = await prisma.user.findUnique({
             where: { id: token.sub },
             select: {
@@ -56,6 +62,7 @@ export const authOptions: NextAuthOptions = {
               role: true,
             },
           });
+          console.log("user from auth", user);
           if (user) {
             session.user = user;
           }
@@ -68,7 +75,10 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id;
+        const extendedUser = user as ExtendedUser;
+        token.sub = extendedUser.id;
+        token.email = extendedUser.email;
+        token.role = extendedUser.role;
       }
       return token;
     },

@@ -6,7 +6,7 @@ import { accessibleBy } from "@casl/prisma";
 
 //GET
 export async function GET(req: NextRequest) {
-  const user = await getUserFromRequest(req);
+  const user = await getUserFromRequest();
   if (!user)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
 //POST
 export async function POST(req: NextRequest) {
-  const user = await getUserFromRequest(req);
+  const user = await getUserFromRequest();
 
   if (!user)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });

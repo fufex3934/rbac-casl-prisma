@@ -1,9 +1,21 @@
-import { prisma } from "./prisma";
-import type { User } from "../generated/prisma";
-import { NextRequest } from "next/server";
+// lib/auth.ts
 
-// For demo: fetch the first user (replace with your real auth logic)
-export async function getUserFromRequest(req: NextRequest): Promise<User | null> {
-  // TODO: Replace with real session / token user lookup
-  return await prisma.user.findFirst();
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { prisma } from "./prisma";
+
+import type { User } from "../generated/prisma";
+
+export async function getUserFromRequest(): Promise<User | null> {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) return null;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+  });
+
+  return user;
 }

@@ -12,7 +12,7 @@ export async function PUT(
     params: Promise<{ id: string }>;
   }
 ) {
-  const user = await getUserFromRequest(req);
+  const user = await getUserFromRequest();
   if (!user)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const ability = defineAbilityFor(user);
@@ -54,7 +54,7 @@ export async function DELETE(
     params: Promise<{ id: string }>;
   }
 ) {
-  const user = await getUserFromRequest(req);
+  const user = await getUserFromRequest();
   if (!user)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const ability = defineAbilityFor(user);
@@ -92,7 +92,7 @@ export async function GET(
     params: Promise<{ id: string }>;
   }
 ) {
-  const user = await getUserFromRequest(req);
+  const user = await getUserFromRequest();
   const { id } = await params;
   if (!user)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
